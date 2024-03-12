@@ -9,12 +9,29 @@ public static class Program
         Console.WriteLine(CalculateAverage(
             [1, 2, 3, 4, 5]
         ));
+
+        Console.WriteLine(FindMax(
+            [1, 2, 3, 4, 5]
+        ));
     }
 
     private static float CalculateAverage(int[] numbers)
     {
         float sum = 0;
+
         foreach (var number in numbers) sum += number;
+
         return sum / numbers.Length;
+    }
+
+    private static int FindMax(int[] numbers)
+    {
+        var max = numbers[0];
+
+        foreach (var number in numbers)
+            if (number > max)
+                max = number;
+
+        return max;
     }
 }
