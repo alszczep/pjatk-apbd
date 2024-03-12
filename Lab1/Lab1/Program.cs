@@ -19,7 +19,7 @@ public static class Program
     {
         float sum = 0;
 
-        foreach (var number in numbers) sum += number;
+        foreach (var number2 in numbers) sum += number2;
 
         return sum / numbers.Length;
     }
