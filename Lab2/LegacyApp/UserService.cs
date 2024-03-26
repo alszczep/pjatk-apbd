@@ -1,102 +1,104 @@
 ﻿using System;
+using LegacyApp.Clients;
+using LegacyApp.Users;
 
-namespace LegacyApp
+// should be in users namespace, but cannot be moved since it's being used by the external app
+namespace LegacyApp;
+
+public class UserService
 {
-    public class UserService
+    private IClientRepository ClientRepository { get; }
+    private Func<IUserCreditService> UserCreditServiceFactory { get; }
+
+    public UserService()
     {
-        private IClientRepository ClientRepository { get; }
-        private Func<IUserCreditService> UserCreditServiceFactory { get; }
+        this.ClientRepository = new ClientRepository();
+        this.UserCreditServiceFactory = () => new UserCreditService();
+    }
 
-        public UserService()
+    public UserService(IClientRepository clientRepository, Func<IUserCreditService> userCreditServiceFactory)
+    {
+        this.ClientRepository = clientRepository;
+        this.UserCreditServiceFactory = userCreditServiceFactory;
+    }
+
+    public bool AddUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
+    {
+        User? user = this.CreateUser(firstName, lastName, email, dateOfBirth, clientId);
+        if (user is null)
         {
-            this.ClientRepository = new ClientRepository();
-            this.UserCreditServiceFactory = () => new UserCreditService();
+            return false;
         }
 
-        public UserService(IClientRepository clientRepository, Func<IUserCreditService> userCreditServiceFactory)
+        UserDataAccess.AddUser(user);
+
+        return true;
+    }
+
+    public User? CreateUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
+    {
+        if (!Validators.IsFullNameValid(firstName, lastName))
         {
-            this.ClientRepository = clientRepository;
-            this.UserCreditServiceFactory = userCreditServiceFactory;
+            return null;
         }
 
-        public bool AddUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
+        if (!Validators.IsEmailValid(email))
         {
-            User? user = this.CreateUser(firstName, lastName, email, dateOfBirth, clientId);
-            if (user is null)
-            {
-                return false;
-            }
-
-            UserDataAccess.AddUser(user);
-
-            return true;
+            return null;
         }
 
-        public User? CreateUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
+        if (!Validators.IsAgeOlderOrEqualTo21(DateTime.Now, dateOfBirth))
         {
-            if (!Validators.IsFullNameValid(firstName, lastName))
+            return null;
+        }
+
+        Client client = this.ClientRepository.GetById(clientId);
+
+        User user = new User
+        {
+            Client = client,
+            DateOfBirth = dateOfBirth,
+            EmailAddress = email,
+            FirstName = firstName,
+            LastName = lastName
+        };
+
+        switch (client.Type)
+        {
+            case KnownClientTypes.VeryImportantClient:
             {
-                return null;
+                user.HasCreditLimit = false;
+
+                break;
             }
-
-            if (!Validators.IsEmailValid(email))
+            case KnownClientTypes.ImportantClient:
             {
-                return null;
-            }
-
-            if (!Validators.IsAgeOlderOrEqualTo21(DateTime.Now, dateOfBirth))
-            {
-                return null;
-            }
-
-            Client client = this.ClientRepository.GetById(clientId);
-
-            User user = new User
-            {
-                Client = client,
-                DateOfBirth = dateOfBirth,
-                EmailAddress = email,
-                FirstName = firstName,
-                LastName = lastName
-            };
-
-            switch (client.Type)
-            {
-                case KnownClientTypes.VeryImportantClient:
+                using (IUserCreditService userCreditService = this.UserCreditServiceFactory())
                 {
-                    user.HasCreditLimit = false;
-
-                    break;
+                    int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
+                    user.CreditLimit = creditLimit * 2;
                 }
-                case KnownClientTypes.ImportantClient:
-                {
-                    using (IUserCreditService userCreditService = this.UserCreditServiceFactory())
-                    {
-                        int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
-                        user.CreditLimit = creditLimit * 2;
-                    }
 
-                    break;
-                }
-                default:
-                {
-                    user.HasCreditLimit = true;
-                    using (IUserCreditService userCreditService = this.UserCreditServiceFactory())
-                    {
-                        user.CreditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
-                    }
-
-                    break;
-                }
+                break;
             }
-
-            if (user.HasCreditLimit && user.CreditLimit < 500)
+            default:
             {
-                return null;
+                user.HasCreditLimit = true;
+                using (IUserCreditService userCreditService = this.UserCreditServiceFactory())
+                {
+                    user.CreditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
+                }
+
+                break;
             }
-
-
-            return user;
         }
+
+        if (user.HasCreditLimit && user.CreditLimit < 500)
+        {
+            return null;
+        }
+
+
+        return user;
     }
 }

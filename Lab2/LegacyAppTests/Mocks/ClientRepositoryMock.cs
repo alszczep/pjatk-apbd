@@ -1,4 +1,4 @@
-﻿using LegacyApp;
+﻿using LegacyApp.Clients;
 
 namespace LegacyAppTests.Mocks;
 
