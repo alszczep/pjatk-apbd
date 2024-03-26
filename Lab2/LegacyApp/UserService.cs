@@ -4,16 +4,45 @@ namespace LegacyApp
 {
     public class UserService
     {
+        private IClientRepository clientRepository;
+        private Func<IUserCreditService> userCreditServiceFactory;
+
+        public UserService(IClientRepository clientRepository, Func<IUserCreditService> userCreditServiceFactory)
+        {
+            this.clientRepository = clientRepository;
+            this.userCreditServiceFactory = userCreditServiceFactory;
+        }
+
+        public UserService()
+        {
+            this.clientRepository = new ClientRepository();
+            this.userCreditServiceFactory = () => new UserCreditService();
+        }
+        
+        
         public bool AddUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
+        {
+            User? user = this.CreateUser(firstName, lastName, email, dateOfBirth, clientId);
+            if (user is null)
+            {
+                return false;
+            }
+            
+            UserDataAccess.AddUser(user);
+            
+            return true;
+        }
+        
+        private User? CreateUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
         {
             if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
             {
-                return false;
+                return null;
             }
 
             if (!email.Contains("@") && !email.Contains("."))
             {
-                return false;
+                return null;
             }
 
             var now = DateTime.Now;
@@ -22,11 +51,10 @@ namespace LegacyApp
 
             if (age < 21)
             {
-                return false;
+                return null;
             }
 
-            var clientRepository = new ClientRepository();
-            var client = clientRepository.GetById(clientId);
+            var client = this.clientRepository.GetById(clientId);
 
             var user = new User
             {
@@ -43,7 +71,7 @@ namespace LegacyApp
             }
             else if (client.Type == "ImportantClient")
             {
-                using (var userCreditService = new UserCreditService())
+                using (var userCreditService = this.userCreditServiceFactory())
                 {
                     int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
                     creditLimit = creditLimit * 2;
@@ -53,7 +81,7 @@ namespace LegacyApp
             else
             {
                 user.HasCreditLimit = true;
-                using (var userCreditService = new UserCreditService())
+                using (var userCreditService = this.userCreditServiceFactory())
                 {
                     int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
                     user.CreditLimit = creditLimit;
@@ -62,11 +90,11 @@ namespace LegacyApp
 
             if (user.HasCreditLimit && user.CreditLimit < 500)
             {
-                return false;
+                return null;
             }
 
-            UserDataAccess.AddUser(user);
-            return true;
+            
+            return user;
         }
     }
 }
