@@ -4,19 +4,19 @@ namespace LegacyApp
 {
     public class UserService
     {
-        private IClientRepository clientRepository;
-        private Func<IUserCreditService> userCreditServiceFactory;
+        private IClientRepository ClientRepository { get; }
+        private Func<IUserCreditService> UserCreditServiceFactory { get; }
 
         public UserService()
         {
-            this.clientRepository = new ClientRepository();
-            this.userCreditServiceFactory = () => new UserCreditService();
+            this.ClientRepository = new ClientRepository();
+            this.UserCreditServiceFactory = () => new UserCreditService();
         }
 
         public UserService(IClientRepository clientRepository, Func<IUserCreditService> userCreditServiceFactory)
         {
-            this.clientRepository = clientRepository;
-            this.userCreditServiceFactory = userCreditServiceFactory;
+            this.ClientRepository = clientRepository;
+            this.UserCreditServiceFactory = userCreditServiceFactory;
         }
 
         public bool AddUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
@@ -49,7 +49,7 @@ namespace LegacyApp
                 return null;
             }
 
-            var client = this.clientRepository.GetById(clientId);
+            var client = this.ClientRepository.GetById(clientId);
 
             var user = new User
             {
@@ -66,7 +66,7 @@ namespace LegacyApp
             }
             else if (client.Type == "ImportantClient")
             {
-                using (var userCreditService = this.userCreditServiceFactory())
+                using (var userCreditService = this.UserCreditServiceFactory())
                 {
                     int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
                     creditLimit = creditLimit * 2;
@@ -76,7 +76,7 @@ namespace LegacyApp
             else
             {
                 user.HasCreditLimit = true;
-                using (var userCreditService = this.userCreditServiceFactory())
+                using (var userCreditService = this.UserCreditServiceFactory())
                 {
                     int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
                     user.CreditLimit = creditLimit;
