@@ -7,19 +7,18 @@ namespace LegacyApp
         private IClientRepository clientRepository;
         private Func<IUserCreditService> userCreditServiceFactory;
 
+        public UserService()
+        {
+            this.clientRepository = new ClientRepository();
+            this.userCreditServiceFactory = () => new UserCreditService();
+        }
+
         public UserService(IClientRepository clientRepository, Func<IUserCreditService> userCreditServiceFactory)
         {
             this.clientRepository = clientRepository;
             this.userCreditServiceFactory = userCreditServiceFactory;
         }
 
-        public UserService()
-        {
-            this.clientRepository = new ClientRepository();
-            this.userCreditServiceFactory = () => new UserCreditService();
-        }
-        
-        
         public bool AddUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
         {
             User? user = this.CreateUser(firstName, lastName, email, dateOfBirth, clientId);
@@ -27,29 +26,25 @@ namespace LegacyApp
             {
                 return false;
             }
-            
+
             UserDataAccess.AddUser(user);
-            
+
             return true;
         }
-        
+
         private User? CreateUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
         {
-            if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
+            if (!Validators.IsFullNameValid(firstName, lastName))
             {
                 return null;
             }
 
-            if (!email.Contains("@") && !email.Contains("."))
+            if (!Validators.IsEmailValid(email))
             {
                 return null;
             }
 
-            var now = DateTime.Now;
-            int age = now.Year - dateOfBirth.Year;
-            if (now.Month < dateOfBirth.Month || (now.Month == dateOfBirth.Month && now.Day < dateOfBirth.Day)) age--;
-
-            if (age < 21)
+            if (!Validators.IsAgeOlderOrEqualTo21(DateTime.Now, dateOfBirth))
             {
                 return null;
             }
@@ -93,7 +88,7 @@ namespace LegacyApp
                 return null;
             }
 
-            
+
             return user;
         }
     }
