@@ -11,6 +11,7 @@ public static class Validators
 
     public static bool IsEmailValid(string email)
     {
+        // this condition doesn't seem to be up to current standards, but existing app uses it
         return email.Contains("@") || email.Contains(".");
     }
 
