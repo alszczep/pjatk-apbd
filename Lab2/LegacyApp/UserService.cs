@@ -32,7 +32,7 @@ namespace LegacyApp
             return true;
         }
 
-        private User? CreateUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
+        public User? CreateUser(string firstName, string lastName, string email, DateTime dateOfBirth, int clientId)
         {
             if (!Validators.IsFullNameValid(firstName, lastName))
             {
@@ -49,9 +49,9 @@ namespace LegacyApp
                 return null;
             }
 
-            var client = this.ClientRepository.GetById(clientId);
+            Client client = this.ClientRepository.GetById(clientId);
 
-            var user = new User
+            User user = new User
             {
                 Client = client,
                 DateOfBirth = dateOfBirth,
@@ -60,26 +60,33 @@ namespace LegacyApp
                 LastName = lastName
             };
 
-            if (client.Type == "VeryImportantClient")
+            switch (client.Type)
             {
-                user.HasCreditLimit = false;
-            }
-            else if (client.Type == "ImportantClient")
-            {
-                using (var userCreditService = this.UserCreditServiceFactory())
+                case KnownClientTypes.VeryImportantClient:
                 {
-                    int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
-                    creditLimit = creditLimit * 2;
-                    user.CreditLimit = creditLimit;
+                    user.HasCreditLimit = false;
+
+                    break;
                 }
-            }
-            else
-            {
-                user.HasCreditLimit = true;
-                using (var userCreditService = this.UserCreditServiceFactory())
+                case KnownClientTypes.ImportantClient:
                 {
-                    int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
-                    user.CreditLimit = creditLimit;
+                    using (IUserCreditService userCreditService = this.UserCreditServiceFactory())
+                    {
+                        int creditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
+                        user.CreditLimit = creditLimit * 2;
+                    }
+
+                    break;
+                }
+                default:
+                {
+                    user.HasCreditLimit = true;
+                    using (IUserCreditService userCreditService = this.UserCreditServiceFactory())
+                    {
+                        user.CreditLimit = userCreditService.GetCreditLimit(user.LastName, user.DateOfBirth);
+                    }
+
+                    break;
                 }
             }
 
