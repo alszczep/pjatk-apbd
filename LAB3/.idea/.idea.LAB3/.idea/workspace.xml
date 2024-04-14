@@ -9,7 +9,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="89e1a2a4-c18d-41e5-b9e0-6d790a2b44e7" name="Changes" comment="" />
+    <list default="true" id="89e1a2a4-c18d-41e5-b9e0-6d790a2b44e7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.LAB3/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.LAB3/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.LAB3/.idea/indexLayout.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.LAB3/.idea/projectSettingsUpdater.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.LAB3/.idea/sqldialects.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.LAB3/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.LAB3/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LAB3.sln" beforeDir="false" afterPath="$PROJECT_DIR$/Lab3.sln" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -105,7 +114,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1713103019240</updated>
-      <workItem from="1713103020377" duration="4256000" />
+      <workItem from="1713103020377" duration="4475000" />
     </task>
     <servers />
   </component>
