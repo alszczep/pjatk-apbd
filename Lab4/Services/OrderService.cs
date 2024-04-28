@@ -6,14 +6,19 @@ namespace Lab4.Services;
 public class OrderService : IOrderService
 {
     private readonly IOrderRepository orderRepository;
-    
+
     public OrderService(IOrderRepository orderRepository)
     {
         this.orderRepository = orderRepository;
     }
-    
-    public IEnumerable<Order> GetOrders(int productId, int amount, DateTime createdBefore)
+
+    public IEnumerable<Order> GetNotFulfilledOrders(int productId, int amount, DateTime createdBefore)
     {
-        return orderRepository.GetOrders(productId, amount, createdBefore);
+        return this.orderRepository.GetNotFulfilledOrders(productId, amount, createdBefore);
+    }
+
+    public void FulfillOrder(int orderId)
+    {
+        this.orderRepository.FulfillOrder(orderId);
     }
 }

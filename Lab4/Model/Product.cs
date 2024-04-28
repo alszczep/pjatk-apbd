@@ -14,8 +14,8 @@ public class Product
     [Required]
     [MaxLength(200)]
     public string Description { get; set; } = "";
-    
+
     [Required]
     [MaxLength(200)]
-    public float Price { get; set; }
+    public decimal Price { get; set; }
 }

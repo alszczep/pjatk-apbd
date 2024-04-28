@@ -11,7 +11,21 @@
   <component name="ChangeListManager">
     <list default="true" id="89e1a2a4-c18d-41e5-b9e0-6d790a2b44e7" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.LAB3/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.LAB3/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Lab1/.idea/.idea.Lab1/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab1/.idea/.idea.Lab1/.idea/indexLayout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Controllers/WarehouseController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Controllers/WarehouseController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Model/Product.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Model/Product.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Model/ProductWarehouse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Model/ProductWarehouse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Repositories/IOrderRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Repositories/IOrderRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Repositories/IProductWarehouseRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Repositories/IProductWarehouseRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Repositories/OrderRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Repositories/OrderRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Repositories/ProductRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Repositories/ProductRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Repositories/ProductWarehouseRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Repositories/ProductWarehouseRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Services/IOrderService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Services/IOrderService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Services/IProductWarehouseService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Services/IProductWarehouseService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Services/OrderService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Services/OrderService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/Services/ProductWarehouseService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/Services/ProductWarehouseService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/appsettings.Development.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Lab4/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/../Lab4/appsettings.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +38,9 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/3ef044d19981e7fd3833cf952fd99724fc64f86cf57cc74f4a227a4db314d4/NFloat.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 7
+}]]></component>
   <component name="ProjectId" id="2f5ty1g32yyt3s0BgiJwHwum0VB" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="1" id="Add" />
@@ -32,27 +49,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.24427481&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "XThreadsFramesViewSplitterKey": "0.24427481",
+    "git-widget-placeholder": "master",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\s24454\\AppData\\Roaming\\JetBrains\\Rider2023.1\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\s24454\\AppData\\Roaming\\JetBrains\\Rider2023.1\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\s24454\\AppData\\Local\\Symbols\\src&quot;
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "C:\\Users\\olek\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache",
+      "C:\\Users\\olek\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache",
+      "C:\\Users\\olek\\AppData\\Local\\Symbols\\src"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.Api: http">
     <configuration name="Api: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Api/Api.csproj" />
@@ -111,6 +129,7 @@
       <workItem from="1713103020377" duration="4475000" />
       <workItem from="1714312580815" duration="914000" />
       <workItem from="1714315114299" duration="30000" />
+      <workItem from="1714334775977" duration="747000" />
     </task>
     <servers />
   </component>

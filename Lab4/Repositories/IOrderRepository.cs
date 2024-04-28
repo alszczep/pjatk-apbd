@@ -4,5 +4,6 @@ namespace Lab4.Repositories;
 
 public interface IOrderRepository
 {
-    IEnumerable<Order> GetOrders(int productId, int amount, DateTime createdBefore);
+    IEnumerable<Order> GetNotFulfilledOrders(int productId, int amount, DateTime createdBefore);
+    void FulfillOrder(int orderId);
 }

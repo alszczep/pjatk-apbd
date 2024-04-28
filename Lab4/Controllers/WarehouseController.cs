@@ -1,4 +1,6 @@
 using Lab4.Controllers.DTOs;
+using Lab4.Helpers;
+using Lab4.Model;
 using Lab4.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +10,11 @@ namespace Lab4.Controllers;
 [ApiController]
 public class WarehouseController : ControllerBase
 {
-    private IProductService productService;
-    private IWarehouseService warehouseService;
-    private IProductWarehouseService productWarehouseService;
-    private IOrderService orderService;
-    
+    private readonly IProductService productService;
+    private readonly IWarehouseService warehouseService;
+    private readonly IProductWarehouseService productWarehouseService;
+    private readonly IOrderService orderService;
+
     public WarehouseController(
         IProductService productService,
         IWarehouseService warehouseService,
@@ -24,31 +26,68 @@ public class WarehouseController : ControllerBase
         this.productWarehouseService = productWarehouseService;
         this.orderService = orderService;
     }
-    
-    [HttpPost]
-    public IActionResult AddProductToWarehouse(AddProductToWarehouseDTO dto)
+
+    [HttpPost("code")]
+    public IActionResult AddProductToWarehouseWithCode(AddProductToWarehouseDTO dto)
     {
-        var affectedCount = productWarehouseService.Create(dto);
-        return StatusCode(StatusCodes.Status201Created);
+        Product? product = this.productService.GetProductById(dto.IdProduct);
+        if(product is null)
+        {
+            return this.StatusCode(StatusCodes.Status422UnprocessableEntity, "Product does not exist");
+        }
+
+        if(this.warehouseService.GetWarehouseById(dto.IdWarehouse) is null)
+        {
+            return this.StatusCode(StatusCodes.Status422UnprocessableEntity, "Warehouse does not exist");
+        }
+
+        if(dto.Amount <= 0)
+        {
+            return this.StatusCode(StatusCodes.Status422UnprocessableEntity, "Amount must be greater than 0");
+        }
+
+        List<Order> orders = this.orderService.GetNotFulfilledOrders(dto.IdProduct, dto.Amount, dto.CreatedAt).ToList();
+
+        if(orders.Count == 0)
+        {
+            return this.StatusCode(StatusCodes.Status422UnprocessableEntity, "Order does not exist");
+        }
+
+        Order order = orders.First();
+
+        List<ProductWarehouse> productWarehouseList = this.productWarehouseService.GetProductWarehouseListByOrderId(order.IdOrder).ToList();
+
+        if(productWarehouseList.Count > 0)
+        {
+            return this.StatusCode(StatusCodes.Status422UnprocessableEntity, "Order has already been fulfilled");
+        }
+
+        this.orderService.FulfillOrder(order.IdOrder);
+        int newId = this.productWarehouseService.AddProductWarehouse(
+            new ProductWarehouse()
+            {
+                IdProduct = dto.IdProduct,
+                IdWarehouse = dto.IdWarehouse,
+                Amount = dto.Amount,
+                Price = dto.Amount * product.Price,
+                CreatedAt = DateTime.Now,
+                IdOrder = order.IdOrder
+            }
+        );
+
+        return this.StatusCode(StatusCodes.Status201Created, newId);
+    }
+
+    [HttpPost("procedure")]
+    public IActionResult AddProductToWarehouseWithProcedure(AddProductToWarehouseDTO dto)
+    {
+        ResponseOrError<int> result = this.productWarehouseService.AddProductWarehouseWithProcedure(dto);
+
+        if(result.Error is not null)
+        {
+            return this.StatusCode(StatusCodes.Status422UnprocessableEntity, result.Error);
+        }
+
+        return this.StatusCode(StatusCodes.Status201Created, result.Response);
     }
 }
-
-// 1. Sprawdzamy, czy produkt o podanym identyfikatorze istnieje. Następnie
-// sprawdzamy, czy magazyn o podanym identyfikatorze istnieje. Wartość
-// ilości przekazana w żądaniu powinna być większa niż 0.
-// 2. Możemy dodać produkt do magazynu tylko wtedy, gdy istnieje
-// zamówienie zakupu produktu w tabeli Order. Dlatego sprawdzamy, czy w
-// tabeli Order istnieje rekord z IdProduktu i Ilością (Amount), które
-// odpowiadają naszemu żądaniu. Data utworzenia zamówienia powinna
-// być wcześniejsza niż data utworzenia w żądaniu.
-// 3. Sprawdzamy, czy to zamówienie zostało przypadkiem zrealizowane.
-// Sprawdzamy, czy nie ma wiersza z danym IdOrder w tabeli
-// Product_Warehouse.
-// 4. Aktualizujemy kolumnę FullfilledAt zamówienia na aktualną datę i
-// godzinę. (UPDATE)
-// 5. Wstawiamy rekord do tabeli Product_Warehouse. Kolumna Price
-// powinna odpowiadać cenie produktu pomnożonej przez kolumnę Amount
-// z naszego zamówienia. Ponadto wstawiamy wartość CreatedAt zgodnie
-// z aktualnym czasem. (INSERT)
-// 6. W wyniku operacji zwracamy wartość klucza głównego wygenerowanego
-// dla rekordu wstawionego do tabeli Product_Warehouse.
