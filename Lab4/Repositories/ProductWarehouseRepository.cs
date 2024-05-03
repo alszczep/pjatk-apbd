@@ -15,20 +15,20 @@ public class ProductWarehouseRepository : IProductWarehouseRepository
         this.configuration = configuration;
     }
 
-    public IEnumerable<ProductWarehouse> GetProductWarehouseListByOrderId(int orderId)
+    public async Task<IEnumerable<ProductWarehouse>> GetProductWarehouseListByOrderId(int orderId)
     {
-        using var con = new SqlConnection(configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var cmd = new SqlCommand();
+        await using var cmd = new SqlCommand();
 
         cmd.Connection = con;
         cmd.CommandText = "SELECT IdProductWarehouse, IdProduct, IdWarehouse, Amount, Price, CreatedAt FROM [s24454].[dbo].[Product_Warehouse] WHERE IdProductWarehouse = @IdProductWarehouse";
         cmd.Parameters.AddWithValue("@IdProductWarehouse", orderId);
 
-        var dr = cmd.ExecuteReader();
+        var dr = await cmd.ExecuteReaderAsync();
         var productWarehouses = new List<ProductWarehouse>();
-        while (dr.Read())
+        while (await dr.ReadAsync())
         {
             productWarehouses.Add(new ProductWarehouse
             {
@@ -44,12 +44,12 @@ public class ProductWarehouseRepository : IProductWarehouseRepository
         return productWarehouses;
     }
 
-    public int AddProductWarehouse(ProductWarehouse productWarehouse)
+    public async Task<int> AddProductWarehouse(ProductWarehouse productWarehouse)
     {
-        using var con = new SqlConnection(configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var addCmd = new SqlCommand();
+        await using var addCmd = new SqlCommand();
 
         addCmd.Connection = con;
         addCmd.CommandText = "INSERT INTO [s24454].[dbo].[Product_Warehouse] (IdProduct, IdWarehouse, IdOrder, Amount, Price, CreatedAt) VALUES (@IdProduct, @IdWarehouse, @IdOrder, @Amount, @Price, @CreatedAt)";
@@ -60,9 +60,9 @@ public class ProductWarehouseRepository : IProductWarehouseRepository
         addCmd.Parameters.AddWithValue("@Price", productWarehouse.Price);
         addCmd.Parameters.AddWithValue("@CreatedAt", productWarehouse.CreatedAt);
 
-        addCmd.ExecuteNonQuery();
+        await addCmd.ExecuteNonQueryAsync();
 
-        using var newIdCmd = new SqlCommand();
+        await using var newIdCmd = new SqlCommand();
 
         newIdCmd.Connection = con;
         newIdCmd.CommandText = "SELECT IdProductWarehouse FROM [s24454].[dbo].[Product_Warehouse] WHERE IdProduct = @IdProduct AND IdWarehouse = @IdWarehouse AND Amount = @Amount AND Price = @Price AND CreatedAt = @CreatedAt";
@@ -72,17 +72,22 @@ public class ProductWarehouseRepository : IProductWarehouseRepository
         newIdCmd.Parameters.AddWithValue("@Price", productWarehouse.Price);
         newIdCmd.Parameters.AddWithValue("@CreatedAt", productWarehouse.CreatedAt);
 
-        var newId = (int)newIdCmd.ExecuteScalar();
+        var newId = (int?) await newIdCmd.ExecuteScalarAsync();
 
-        return newId;
+        if(newId is null)
+        {
+            throw new Exception("Failed to get new id");
+        }
+
+        return (int)newId;
     }
 
-    public ResponseOrError<int> AddProductWarehouseWithProcedure(AddProductToWarehouseDTO dto)
+    public async Task<ResponseOrError<int>> AddProductWarehouseWithProcedure(AddProductToWarehouseDTO dto)
     {
-        using var con = new SqlConnection(configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var cmd = new SqlCommand();
+        await using var cmd = new SqlCommand();
 
         cmd.Connection = con;
         cmd.CommandText = "AddProductToWarehouse";
@@ -94,7 +99,17 @@ public class ProductWarehouseRepository : IProductWarehouseRepository
 
         try
         {
-            var newId = (decimal)cmd.ExecuteScalar();
+            var newId = (decimal?) await cmd.ExecuteScalarAsync();
+
+            if(newId is null)
+            {
+                return new ResponseOrError<int>()
+                {
+                    Response = -1,
+                    Error = "Failed to get new id"
+                };
+            }
+
             return new ResponseOrError<int>()
             {
                 Response = (int)newId,

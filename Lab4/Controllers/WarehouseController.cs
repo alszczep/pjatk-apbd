@@ -28,15 +28,15 @@ public class WarehouseController : ControllerBase
     }
 
     [HttpPost("code")]
-    public IActionResult AddProductToWarehouseWithCode(AddProductToWarehouseDTO dto)
+    public async Task<IActionResult> AddProductToWarehouseWithCode(AddProductToWarehouseDTO dto)
     {
-        Product? product = this.productService.GetProductById(dto.IdProduct);
+        Product? product = await this.productService.GetProductById(dto.IdProduct);
         if(product is null)
         {
             return this.StatusCode(StatusCodes.Status422UnprocessableEntity, "Product does not exist");
         }
 
-        if(this.warehouseService.GetWarehouseById(dto.IdWarehouse) is null)
+        if(await this.warehouseService.GetWarehouseById(dto.IdWarehouse) is null)
         {
             return this.StatusCode(StatusCodes.Status422UnprocessableEntity, "Warehouse does not exist");
         }
@@ -46,7 +46,7 @@ public class WarehouseController : ControllerBase
             return this.StatusCode(StatusCodes.Status422UnprocessableEntity, "Amount must be greater than 0");
         }
 
-        List<Order> orders = this.orderService.GetNotFulfilledOrders(dto.IdProduct, dto.Amount, dto.CreatedAt).ToList();
+        List<Order> orders = (await this.orderService.GetNotFulfilledOrders(dto.IdProduct, dto.Amount, dto.CreatedAt)).ToList();
 
         if(orders.Count == 0)
         {
@@ -55,15 +55,15 @@ public class WarehouseController : ControllerBase
 
         Order order = orders.First();
 
-        List<ProductWarehouse> productWarehouseList = this.productWarehouseService.GetProductWarehouseListByOrderId(order.IdOrder).ToList();
+        List<ProductWarehouse> productWarehouseList = (await this.productWarehouseService.GetProductWarehouseListByOrderId(order.IdOrder)).ToList();
 
         if(productWarehouseList.Count > 0)
         {
             return this.StatusCode(StatusCodes.Status422UnprocessableEntity, "Order has already been fulfilled");
         }
 
-        this.orderService.FulfillOrder(order.IdOrder);
-        int newId = this.productWarehouseService.AddProductWarehouse(
+        await this.orderService.FulfillOrder(order.IdOrder);
+        int newId = await this.productWarehouseService.AddProductWarehouse(
             new ProductWarehouse()
             {
                 IdProduct = dto.IdProduct,
@@ -79,9 +79,9 @@ public class WarehouseController : ControllerBase
     }
 
     [HttpPost("procedure")]
-    public IActionResult AddProductToWarehouseWithProcedure(AddProductToWarehouseDTO dto)
+    public async Task<IActionResult> AddProductToWarehouseWithProcedure(AddProductToWarehouseDTO dto)
     {
-        ResponseOrError<int> result = this.productWarehouseService.AddProductWarehouseWithProcedure(dto);
+        ResponseOrError<int> result = await this.productWarehouseService.AddProductWarehouseWithProcedure(dto);
 
         if(result.Error is not null)
         {

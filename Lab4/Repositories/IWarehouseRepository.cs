@@ -4,5 +4,5 @@ namespace Lab4.Repositories;
 
 public interface IWarehouseRepository
 {
-    Warehouse? GetWarehouseById(int id);
+    Task<Warehouse?> GetWarehouseById(int id);
 }

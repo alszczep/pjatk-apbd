@@ -4,5 +4,5 @@ namespace Lab4.Services;
 
 public interface IProductService
 {
-    Product? GetProductById(int id);
+    Task<Product?> GetProductById(int id);
 }

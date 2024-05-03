@@ -12,13 +12,13 @@ public class OrderService : IOrderService
         this.orderRepository = orderRepository;
     }
 
-    public IEnumerable<Order> GetNotFulfilledOrders(int productId, int amount, DateTime createdBefore)
+    public async Task<IEnumerable<Order>> GetNotFulfilledOrders(int productId, int amount, DateTime createdBefore)
     {
-        return this.orderRepository.GetNotFulfilledOrders(productId, amount, createdBefore);
+        return await this.orderRepository.GetNotFulfilledOrders(productId, amount, createdBefore);
     }
 
-    public void FulfillOrder(int orderId)
+    public async Task FulfillOrder(int orderId)
     {
-        this.orderRepository.FulfillOrder(orderId);
+        await this.orderRepository.FulfillOrder(orderId);
     }
 }

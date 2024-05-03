@@ -12,19 +12,19 @@ public class ProductRepository : IProductRepository
         this.configuration = configuration;
     }
 
-    public Product? GetProductById(int id)
+    public async Task<Product?> GetProductById(int id)
     {
-        using var con = new SqlConnection(configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var cmd = new SqlCommand();
+        await using var cmd = new SqlCommand();
 
         cmd.Connection = con;
         cmd.CommandText = "SELECT IdProduct, Name, Description, Price FROM [s24454].[dbo].[Product] WHERE IdProduct = @IdProduct";
         cmd.Parameters.AddWithValue("@IdProduct", id);
 
-        var dr = cmd.ExecuteReader();
-        if (dr.Read())
+        var dr = await cmd.ExecuteReaderAsync();
+        if (await dr.ReadAsync())
         {
             return new Product
             {

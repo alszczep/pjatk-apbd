@@ -4,6 +4,6 @@ namespace Lab4.Services;
 
 public interface IOrderService
 {
-    IEnumerable<Order> GetNotFulfilledOrders(int productId, int amount, DateTime createdBefore);
-    void FulfillOrder(int orderId);
+    Task<IEnumerable<Order>> GetNotFulfilledOrders(int productId, int amount, DateTime createdBefore);
+    Task FulfillOrder(int orderId);
 }

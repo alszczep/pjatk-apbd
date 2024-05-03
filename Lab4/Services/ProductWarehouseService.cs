@@ -14,18 +14,18 @@ public class ProductWarehouseService : IProductWarehouseService
         this.productWarehouseRepository = productWarehouseRepository;
     }
 
-    public IEnumerable<ProductWarehouse> GetProductWarehouseListByOrderId(int orderId)
+    public async Task<IEnumerable<ProductWarehouse>> GetProductWarehouseListByOrderId(int orderId)
     {
-        return this.productWarehouseRepository.GetProductWarehouseListByOrderId(orderId);
+        return await this.productWarehouseRepository.GetProductWarehouseListByOrderId(orderId);
     }
 
-    public int AddProductWarehouse(ProductWarehouse productWarehouse)
+    public async Task<int> AddProductWarehouse(ProductWarehouse productWarehouse)
     {
-        return this.productWarehouseRepository.AddProductWarehouse(productWarehouse);
+        return await this.productWarehouseRepository.AddProductWarehouse(productWarehouse);
     }
 
-    public ResponseOrError<int> AddProductWarehouseWithProcedure(AddProductToWarehouseDTO dto)
+    public async Task<ResponseOrError<int>> AddProductWarehouseWithProcedure(AddProductToWarehouseDTO dto)
     {
-        return this.productWarehouseRepository.AddProductWarehouseWithProcedure(dto);
+        return await this.productWarehouseRepository.AddProductWarehouseWithProcedure(dto);
     }
 }

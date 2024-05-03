@@ -6,14 +6,14 @@ namespace Lab4.Services;
 public class WarehouseService : IWarehouseService
 {
     private readonly IWarehouseRepository warehouseRepository;
-    
+
     public WarehouseService(IWarehouseRepository warehouseRepository)
     {
         this.warehouseRepository = warehouseRepository;
     }
-    
-    public Warehouse? GetWarehouseById(int id)
+
+    public async Task<Warehouse?> GetWarehouseById(int id)
     {
-        return warehouseRepository.GetWarehouseById(id);
+        return await this.warehouseRepository.GetWarehouseById(id);
     }
 }

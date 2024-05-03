@@ -6,14 +6,14 @@ namespace Lab4.Services;
 public class ProductService : IProductService
 {
     private readonly IProductRepository productRepository;
-    
+
     public ProductService(IProductRepository productRepository)
     {
         this.productRepository = productRepository;
     }
-    
-    public Product? GetProductById(int id)
+
+    public async Task<Product?> GetProductById(int id)
     {
-        return productRepository.GetProductById(id);
+        return await this.productRepository.GetProductById(id);
     }
 }

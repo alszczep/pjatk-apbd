@@ -12,12 +12,12 @@ public class OrderRepository : IOrderRepository
         this.configuration = configuration;
     }
 
-    public IEnumerable<Order> GetNotFulfilledOrders(int productId, int amount, DateTime createdBefore)
+    public async Task<IEnumerable<Order>> GetNotFulfilledOrders(int productId, int amount, DateTime createdBefore)
     {
-        using var con = new SqlConnection(this.configuration["ConnectionStrings:DefaultConnection"]);
+        await using var con = new SqlConnection(this.configuration["ConnectionStrings:DefaultConnection"]);
         con.Open();
 
-        using var cmd = new SqlCommand();
+        await using var cmd = new SqlCommand();
 
         cmd.Connection = con;
         cmd.CommandText = "SELECT IdOrder, IdProduct, Amount, CreatedAt, FulfilledAt FROM [s24454].[dbo].[Order] WHERE IdProduct = @IdProduct AND Amount = @Amount AND CreatedAt < @CreatedBefore AND FulfilledAt IS NULL";
@@ -25,9 +25,9 @@ public class OrderRepository : IOrderRepository
         cmd.Parameters.AddWithValue("@Amount", amount);
         cmd.Parameters.AddWithValue("@CreatedBefore", createdBefore);
 
-        var dr = cmd.ExecuteReader();
+        var dr = await cmd.ExecuteReaderAsync();
         var orders = new List<Order>();
-        while (dr.Read())
+        while (await dr.ReadAsync())
         {
             orders.Add(new Order
             {
@@ -42,18 +42,18 @@ public class OrderRepository : IOrderRepository
         return orders;
     }
 
-    public void FulfillOrder(int orderId)
+    public async Task FulfillOrder(int orderId)
     {
-        using var con = new SqlConnection(this.configuration["ConnectionStrings:DefaultConnection"]);
-        con.Open();
+        await using var con = new SqlConnection(this.configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        using var cmd = new SqlCommand();
+        await using var cmd = new SqlCommand();
 
         cmd.Connection = con;
         cmd.CommandText = "UPDATE [s24454].[dbo].[Order] SET FulfilledAt = @FulfilledAt WHERE IdOrder = @IdOrder";
         cmd.Parameters.AddWithValue("@FulfilledAt", DateTime.Now);
         cmd.Parameters.AddWithValue("@IdOrder", orderId);
 
-        cmd.ExecuteNonQuery();
+        await cmd.ExecuteNonQueryAsync();
     }
 }

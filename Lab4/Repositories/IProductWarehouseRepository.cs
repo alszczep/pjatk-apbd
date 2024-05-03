@@ -6,7 +6,7 @@ namespace Lab4.Repositories;
 
 public interface IProductWarehouseRepository
 {
-    IEnumerable<ProductWarehouse> GetProductWarehouseListByOrderId(int orderId);
-    int AddProductWarehouse(ProductWarehouse productWarehouse);
-    ResponseOrError<int> AddProductWarehouseWithProcedure(AddProductToWarehouseDTO dto);
+    Task<IEnumerable<ProductWarehouse>> GetProductWarehouseListByOrderId(int orderId);
+    Task<int> AddProductWarehouse(ProductWarehouse productWarehouse);
+    Task<ResponseOrError<int>> AddProductWarehouseWithProcedure(AddProductToWarehouseDTO dto);
 }

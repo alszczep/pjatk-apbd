@@ -4,5 +4,5 @@ namespace Lab4.Services;
 
 public interface IWarehouseService
 {
-    Warehouse? GetWarehouseById(int id);
+    Task<Warehouse?> GetWarehouseById(int id);
 }
