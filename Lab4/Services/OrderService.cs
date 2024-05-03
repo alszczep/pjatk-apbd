@@ -1,3 +1,4 @@
+using System.Data.SqlClient;
 using Lab4.Model;
 using Lab4.Repositories;
 
@@ -17,8 +18,8 @@ public class OrderService : IOrderService
         return await this.orderRepository.GetNotFulfilledOrders(productId, amount, createdBefore);
     }
 
-    public async Task FulfillOrder(int orderId)
+    public async Task FulfillOrder(int orderId, SqlCommand transactionCommand)
     {
-        await this.orderRepository.FulfillOrder(orderId);
+        await this.orderRepository.FulfillOrder(orderId, transactionCommand);
     }
 }

@@ -42,18 +42,12 @@ public class OrderRepository : IOrderRepository
         return orders;
     }
 
-    public async Task FulfillOrder(int orderId)
+    public async Task FulfillOrder(int orderId, SqlCommand transactionCommand)
     {
-        await using var con = new SqlConnection(this.configuration["ConnectionStrings:DefaultConnection"]);
-        await con.OpenAsync();
+        transactionCommand.CommandText = "UPDATE [s24454].[dbo].[Order] SET FulfilledAt = @FulfilledAt WHERE IdOrder = @IdOrder";
+        transactionCommand.Parameters.AddWithValue("@FulfilledAt", DateTime.Now);
+        transactionCommand.Parameters.AddWithValue("@IdOrder", orderId);
 
-        await using var cmd = new SqlCommand();
-
-        cmd.Connection = con;
-        cmd.CommandText = "UPDATE [s24454].[dbo].[Order] SET FulfilledAt = @FulfilledAt WHERE IdOrder = @IdOrder";
-        cmd.Parameters.AddWithValue("@FulfilledAt", DateTime.Now);
-        cmd.Parameters.AddWithValue("@IdOrder", orderId);
-
-        await cmd.ExecuteNonQueryAsync();
+        await transactionCommand.ExecuteNonQueryAsync();
     }
 }

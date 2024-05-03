@@ -1,3 +1,4 @@
+using System.Data.SqlClient;
 using Lab4.Controllers.DTOs;
 using Lab4.Helpers;
 using Lab4.Model;
@@ -14,17 +15,20 @@ public class WarehouseController : ControllerBase
     private readonly IWarehouseService warehouseService;
     private readonly IProductWarehouseService productWarehouseService;
     private readonly IOrderService orderService;
+    private readonly IConfiguration configuration;
 
     public WarehouseController(
         IProductService productService,
         IWarehouseService warehouseService,
         IProductWarehouseService productWarehouseService,
-        IOrderService orderService)
+        IOrderService orderService,
+        IConfiguration configuration)
     {
         this.productService = productService;
         this.warehouseService = warehouseService;
         this.productWarehouseService = productWarehouseService;
         this.orderService = orderService;
+        this.configuration = configuration;
     }
 
     [HttpPost("code")]
@@ -62,20 +66,39 @@ public class WarehouseController : ControllerBase
             return this.StatusCode(StatusCodes.Status422UnprocessableEntity, "Order has already been fulfilled");
         }
 
-        await this.orderService.FulfillOrder(order.IdOrder);
-        int newId = await this.productWarehouseService.AddProductWarehouse(
-            new ProductWarehouse()
-            {
-                IdProduct = dto.IdProduct,
-                IdWarehouse = dto.IdWarehouse,
-                Amount = dto.Amount,
-                Price = dto.Amount * product.Price,
-                CreatedAt = DateTime.Now,
-                IdOrder = order.IdOrder
-            }
-        );
+        await using var con = new SqlConnection(this.configuration["ConnectionStrings:DefaultConnection"]);
+        await con.OpenAsync();
 
-        return this.StatusCode(StatusCodes.Status201Created, newId);
+        await using var cmd = new SqlCommand();
+        cmd.Connection = con;
+        var tran = await con.BeginTransactionAsync();
+        cmd.Transaction = (SqlTransaction)tran;
+
+        try
+        {
+            await this.orderService.FulfillOrder(order.IdOrder, cmd);
+            cmd.Parameters.Clear();
+            int newId = await this.productWarehouseService.AddProductWarehouse(
+                new ProductWarehouse()
+                {
+                    IdProduct = dto.IdProduct,
+                    IdWarehouse = dto.IdWarehouse,
+                    Amount = dto.Amount,
+                    Price = dto.Amount * product.Price,
+                    CreatedAt = DateTime.Now,
+                    IdOrder = order.IdOrder
+                },
+                cmd
+            );
+
+            await tran.CommitAsync();
+
+            return this.StatusCode(StatusCodes.Status201Created, newId);
+        } catch (Exception e)
+        {
+            await tran.RollbackAsync();
+            return this.StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
 
     [HttpPost("procedure")]

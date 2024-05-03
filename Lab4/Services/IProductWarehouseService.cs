@@ -1,3 +1,4 @@
+using System.Data.SqlClient;
 using Lab4.Controllers.DTOs;
 using Lab4.Helpers;
 using Lab4.Model;
@@ -7,6 +8,6 @@ namespace Lab4.Services;
 public interface IProductWarehouseService
 {
     Task<IEnumerable<ProductWarehouse>> GetProductWarehouseListByOrderId(int orderId);
-    Task<int> AddProductWarehouse(ProductWarehouse productWarehouse);
+    Task<int> AddProductWarehouse(ProductWarehouse productWarehouse, SqlCommand transactionCommand);
     Task<ResponseOrError<int>> AddProductWarehouseWithProcedure(AddProductToWarehouseDTO dto);
 }

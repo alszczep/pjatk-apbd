@@ -1,3 +1,4 @@
+using System.Data.SqlClient;
 using Lab4.Controllers.DTOs;
 using Lab4.Helpers;
 using Lab4.Model;
@@ -19,9 +20,9 @@ public class ProductWarehouseService : IProductWarehouseService
         return await this.productWarehouseRepository.GetProductWarehouseListByOrderId(orderId);
     }
 
-    public async Task<int> AddProductWarehouse(ProductWarehouse productWarehouse)
+    public async Task<int> AddProductWarehouse(ProductWarehouse productWarehouse, SqlCommand transactionCommand)
     {
-        return await this.productWarehouseRepository.AddProductWarehouse(productWarehouse);
+        return await this.productWarehouseRepository.AddProductWarehouse(productWarehouse, transactionCommand);
     }
 
     public async Task<ResponseOrError<int>> AddProductWarehouseWithProcedure(AddProductToWarehouseDTO dto)

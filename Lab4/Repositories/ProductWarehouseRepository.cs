@@ -44,35 +44,17 @@ public class ProductWarehouseRepository : IProductWarehouseRepository
         return productWarehouses;
     }
 
-    public async Task<int> AddProductWarehouse(ProductWarehouse productWarehouse)
+    public async Task<int> AddProductWarehouse(ProductWarehouse productWarehouse, SqlCommand transactionCommand)
     {
-        await using var con = new SqlConnection(configuration["ConnectionStrings:DefaultConnection"]);
-        await con.OpenAsync();
+        transactionCommand.CommandText = "INSERT INTO [s24454].[dbo].[Product_Warehouse] (IdProduct, IdWarehouse, IdOrder, Amount, Price, CreatedAt) VALUES (@IdProduct, @IdWarehouse, @IdOrder, @Amount, @Price, @CreatedAt);SELECT SCOPE_IDENTITY();";
+        transactionCommand.Parameters.AddWithValue("@IdProduct", productWarehouse.IdProduct);
+        transactionCommand.Parameters.AddWithValue("@IdWarehouse", productWarehouse.IdWarehouse);
+        transactionCommand.Parameters.AddWithValue("@IdOrder", productWarehouse.IdOrder);
+        transactionCommand.Parameters.AddWithValue("@Amount", productWarehouse.Amount);
+        transactionCommand.Parameters.AddWithValue("@Price", productWarehouse.Price);
+        transactionCommand.Parameters.AddWithValue("@CreatedAt", productWarehouse.CreatedAt);
 
-        await using var addCmd = new SqlCommand();
-
-        addCmd.Connection = con;
-        addCmd.CommandText = "INSERT INTO [s24454].[dbo].[Product_Warehouse] (IdProduct, IdWarehouse, IdOrder, Amount, Price, CreatedAt) VALUES (@IdProduct, @IdWarehouse, @IdOrder, @Amount, @Price, @CreatedAt)";
-        addCmd.Parameters.AddWithValue("@IdProduct", productWarehouse.IdProduct);
-        addCmd.Parameters.AddWithValue("@IdWarehouse", productWarehouse.IdWarehouse);
-        addCmd.Parameters.AddWithValue("@IdOrder", productWarehouse.IdOrder);
-        addCmd.Parameters.AddWithValue("@Amount", productWarehouse.Amount);
-        addCmd.Parameters.AddWithValue("@Price", productWarehouse.Price);
-        addCmd.Parameters.AddWithValue("@CreatedAt", productWarehouse.CreatedAt);
-
-        await addCmd.ExecuteNonQueryAsync();
-
-        await using var newIdCmd = new SqlCommand();
-
-        newIdCmd.Connection = con;
-        newIdCmd.CommandText = "SELECT IdProductWarehouse FROM [s24454].[dbo].[Product_Warehouse] WHERE IdProduct = @IdProduct AND IdWarehouse = @IdWarehouse AND Amount = @Amount AND Price = @Price AND CreatedAt = @CreatedAt";
-        newIdCmd.Parameters.AddWithValue("@IdProduct", productWarehouse.IdProduct);
-        newIdCmd.Parameters.AddWithValue("@IdWarehouse", productWarehouse.IdWarehouse);
-        newIdCmd.Parameters.AddWithValue("@Amount", productWarehouse.Amount);
-        newIdCmd.Parameters.AddWithValue("@Price", productWarehouse.Price);
-        newIdCmd.Parameters.AddWithValue("@CreatedAt", productWarehouse.CreatedAt);
-
-        var newId = (int?) await newIdCmd.ExecuteScalarAsync();
+        var newId = (decimal?) await transactionCommand.ExecuteScalarAsync();
 
         if(newId is null)
         {
