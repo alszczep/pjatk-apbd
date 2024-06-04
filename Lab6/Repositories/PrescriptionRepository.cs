@@ -17,4 +17,9 @@ public class PrescriptionRepository : IPrescriptionRepository
     {
         this.prescriptionsContext.Prescriptions.Add(prescription);
     }
+
+    public async Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        await this.prescriptionsContext.SaveChangesAsync(cancellationToken);
+    }
 }

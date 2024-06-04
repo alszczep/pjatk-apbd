@@ -10,14 +10,12 @@ public class PrescriptionService : IPrescriptionService
     private readonly IPrescriptionRepository prescriptionRepository;
     private readonly IMedicamentRepository medicamentRepository;
     private readonly IPatientRepository patientRepository;
-    private readonly PrescriptionsContext dbContext;
 
-    public PrescriptionService(IPrescriptionRepository prescriptionRepository, IMedicamentRepository medicamentRepository, IPatientRepository patientRepository, PrescriptionsContext dbContext)
+    public PrescriptionService(IPrescriptionRepository prescriptionRepository, IMedicamentRepository medicamentRepository, IPatientRepository patientRepository)
     {
         this.prescriptionRepository = prescriptionRepository;
         this.medicamentRepository = medicamentRepository;
         this.patientRepository = patientRepository;
-        this.dbContext = dbContext;
     }
 
     public async Task AddPrescription(AddPrescriptionDTO dto, CancellationToken cancellationToken)
@@ -67,6 +65,6 @@ public class PrescriptionService : IPrescriptionService
 
         this.prescriptionRepository.AddPrescription(prescription);
 
-        await this.dbContext.SaveChangesAsync(cancellationToken);
+        await this.prescriptionRepository.SaveChangesAsync(cancellationToken);
     }
 }
