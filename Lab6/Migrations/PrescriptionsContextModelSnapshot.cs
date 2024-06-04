@@ -26,10 +26,7 @@ namespace Lab6.Migrations
             modelBuilder.Entity("Lab6.Models.Doctor", b =>
                 {
                     b.Property<int>("IdDoctor")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdDoctor"));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -50,15 +47,28 @@ namespace Lab6.Migrations
                         .HasName("Doctor_pk");
 
                     b.ToTable("Doctor", "apbdlab6");
+
+                    b.HasData(
+                        new
+                        {
+                            IdDoctor = 1,
+                            Email = "Doc1",
+                            FirstName = "Doc1",
+                            LastName = "Doc1"
+                        },
+                        new
+                        {
+                            IdDoctor = 2,
+                            Email = "Doc2",
+                            FirstName = "Doc2",
+                            LastName = "Doc2"
+                        });
                 });
 
             modelBuilder.Entity("Lab6.Models.Medicament", b =>
                 {
                     b.Property<int>("IdMedicament")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdMedicament"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -79,15 +89,28 @@ namespace Lab6.Migrations
                         .HasName("Medicament_pk");
 
                     b.ToTable("Medicament", "apbdlab6");
+
+                    b.HasData(
+                        new
+                        {
+                            IdMedicament = 1,
+                            Description = "Desc1",
+                            Name = "Med1",
+                            Type = "Type1"
+                        },
+                        new
+                        {
+                            IdMedicament = 2,
+                            Description = "Desc2",
+                            Name = "Med2",
+                            Type = "Type2"
+                        });
                 });
 
             modelBuilder.Entity("Lab6.Models.Patient", b =>
                 {
                     b.Property<int>("IdPatient")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPatient"));
 
                     b.Property<DateOnly>("Birthdate")
                         .HasColumnType("date");
@@ -106,6 +129,22 @@ namespace Lab6.Migrations
                         .HasName("Patient_pk");
 
                     b.ToTable("Patient", "apbdlab6");
+
+                    b.HasData(
+                        new
+                        {
+                            IdPatient = 1,
+                            Birthdate = new DateOnly(2002, 10, 23),
+                            FirstName = "Pat1",
+                            LastName = "Pat1"
+                        },
+                        new
+                        {
+                            IdPatient = 2,
+                            Birthdate = new DateOnly(2001, 10, 23),
+                            FirstName = "Pat2",
+                            LastName = "Pat2"
+                        });
                 });
 
             modelBuilder.Entity("Lab6.Models.Prescription", b =>
