@@ -124,6 +124,7 @@ public partial class ProjectContext : DbContext
             entity.Property(e => e.PriceInPlnAfterDiscounts).IsRequired().HasColumnType("money");
             entity.Property(e => e.YearsOfExtendedSupport).IsRequired();
             entity.Property(e => e.IsSigned).IsRequired();
+            entity.Property(e => e.SignedDate).IsRequired(false);
 
             entity.HasOne(e => e.Client)
                 .WithMany(e => e.Contracts)
