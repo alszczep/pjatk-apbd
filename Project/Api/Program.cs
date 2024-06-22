@@ -1,5 +1,7 @@
 using System.Text;
 using Api.Context;
+using Api.ExternalServices;
+using Api.ExternalServices.Interfaces;
 using Api.Repositories;
 using Api.Repositories.Interfaces;
 using Api.Services;
@@ -81,6 +83,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+
 builder.Services.AddScoped<IClientsRepository, ClientsRepository>();
 builder.Services.AddScoped<IContractPaymentsRepository, ContractPaymentsRepository>();
 builder.Services.AddScoped<IContractsRepository, ContractsRepository>();
@@ -90,6 +93,10 @@ builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IClientsService, ClientsService>();
 builder.Services.AddScoped<IContractsService, ContractsService>();
+builder.Services.AddScoped<IRevenueService, RevenueService>();
+
+builder.Services.AddScoped<INBPService, NBPService>();
+builder.Services.AddHttpClient<INBPService, NBPService>();
 
 builder.Services.AddAuthorization();
 
