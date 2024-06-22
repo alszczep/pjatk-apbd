@@ -56,7 +56,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = false,
         ValidateAudience = false,
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.FromMinutes(2)
+        ClockSkew = TimeSpan.FromMinutes(1)
     };
 
     options.Events = new JwtBearerEvents
@@ -76,15 +76,16 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = false,
         ValidateAudience = false,
         ValidateLifetime = false,
-        ClockSkew = TimeSpan.FromMinutes(2),
+        ClockSkew = TimeSpan.FromMinutes(1),
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Auth:JwtSecret"]!))
     };
 });
 
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
+builder.Services.AddScoped<IClientsRepository, ClientsRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
-
+builder.Services.AddScoped<IClientsService, ClientsService>();
 
 builder.Services.AddAuthorization();
 

@@ -1,5 +1,4 @@
 using Api.DTOs;
-using Api.Helpers;
 using Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -43,19 +42,5 @@ public class AuthController : ControllerBase
         TokensDTO tokens = await this.authService.RefreshToken(dto.RefreshToken, cancellationToken);
 
         return this.Ok(tokens);
-    }
-
-    [Authorize]
-    [HttpGet("authtest")]
-    public ActionResult AuthTest()
-    {
-        return this.Ok(AuthHelpers.GetUsernameFromClaimsPrincipal(this.User));
-    }
-
-    [Authorize(Roles = "Admin")]
-    [HttpGet("admintest")]
-    public ActionResult AdminTest()
-    {
-        return this.Ok(AuthHelpers.GetRoleFromClaimsPrincipal(this.User));
     }
 }
