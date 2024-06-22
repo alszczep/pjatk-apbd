@@ -81,11 +81,15 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<IClientsRepository, ClientsRepository>();
+builder.Services.AddScoped<IContractPaymentsRepository, ContractPaymentsRepository>();
+builder.Services.AddScoped<IContractsRepository, ContractsRepository>();
+builder.Services.AddScoped<ISoftwareProductsRepository, SoftwareProductsRepository>();
+builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IClientsService, ClientsService>();
+builder.Services.AddScoped<IContractsService, ContractsService>();
 
 builder.Services.AddAuthorization();
 

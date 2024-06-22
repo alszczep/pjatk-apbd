@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
-[Microsoft.AspNetCore.Components.Route("clients")]
+[Route("clients")]
 public class ClientsController : ControllerBase
 {
     private readonly IClientsService clientsService;
@@ -31,7 +31,7 @@ public class ClientsController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpPost("update")]
+    [HttpPut("update")]
     public async Task<ActionResult> UpdateClient([FromBody] UpdateClientDTO dto, CancellationToken cancellationToken)
     {
         try
@@ -46,7 +46,7 @@ public class ClientsController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpPost("delete/{id:guid}")]
+    [HttpDelete("delete/{id:guid}")]
     public async Task<ActionResult> DeleteClient(Guid id, CancellationToken cancellationToken)
     {
         try

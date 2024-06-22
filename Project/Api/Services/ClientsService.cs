@@ -27,6 +27,12 @@ public class ClientsService : IClientsService
             if (dto.LastName == null)
                 throw new ArgumentException("Last name is required for individual clients");
 
+            ClientIndividual? existingClient =
+                await this.clientsRepository.GetClientByPeselAsync(dto.Pesel, cancellationToken);
+
+            if (existingClient != null)
+                throw new ArgumentException("Client with this pesel already exists");
+
             ClientIndividual client = new()
             {
                 Id = Guid.NewGuid(),
@@ -47,6 +53,12 @@ public class ClientsService : IClientsService
 
             if (dto.CompanyName == null)
                 throw new ArgumentException("Company name is required for company clients");
+
+            ClientCompany? existingClient =
+                await this.clientsRepository.GetClientByKrsAsync(dto.Krs, cancellationToken);
+
+            if (existingClient != null)
+                throw new ArgumentException("Client with this krs already exists");
 
             ClientCompany client = new()
             {

@@ -16,9 +16,32 @@ public class ClientsRepository : IClientsRepository
 
     public Task<Client?> GetClientByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return this.projectContext.Clients.FirstOrDefaultAsync(c => c.Id == id && (
-            c.Type == ClientType.Company || !((ClientIndividual)c).IsDeleted
-        ), cancellationToken);
+        return this.projectContext.Clients.FirstOrDefaultAsync(
+            c => c.Id == id && (c.Type == ClientType.Company || !((ClientIndividual)c).IsDeleted),
+            cancellationToken);
+    }
+
+    public Task<Client?> GetClientWithContractsAndSoftwareProductsByIdAsync(Guid id,
+        CancellationToken cancellationToken)
+    {
+        return this.projectContext.Clients
+            .Include(c => c.Contracts)
+            .ThenInclude(c => c.SoftwareProduct)
+            .FirstOrDefaultAsync(
+                c => c.Id == id && (c.Type == ClientType.Company || !((ClientIndividual)c).IsDeleted),
+                cancellationToken);
+    }
+
+    public Task<ClientIndividual?> GetClientByPeselAsync(string pesel, CancellationToken cancellationToken)
+    {
+        return this.projectContext.Clients.OfType<ClientIndividual>()
+            .FirstOrDefaultAsync(c => c.Pesel == pesel && !c.IsDeleted, cancellationToken);
+    }
+
+    public Task<ClientCompany?> GetClientByKrsAsync(string krs, CancellationToken cancellationToken)
+    {
+        return this.projectContext.Clients.OfType<ClientCompany>()
+            .FirstOrDefaultAsync(c => c.Krs == krs, cancellationToken);
     }
 
     public void AddClient(Client client)
