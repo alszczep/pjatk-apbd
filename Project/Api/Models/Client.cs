@@ -15,4 +15,5 @@ public abstract class Client
     public ClientType Type { get; init; }
 
     public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
+    public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 }

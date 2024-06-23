@@ -26,6 +26,8 @@ public partial class ProjectContext : DbContext
     public DbSet<SoftwareProduct> SoftwareProducts { get; set; } = null!;
     public DbSet<Contract> Contracts { get; set; } = null!;
     public DbSet<ContractPayment> ContractPayments { get; set; } = null!;
+    public DbSet<Subscription> Subscriptions { get; set; } = null!;
+    public DbSet<SubscriptionPayment> SubscriptionPayments { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -144,6 +146,39 @@ public partial class ProjectContext : DbContext
             entity.Property(e => e.PaymentAmountInPln).IsRequired().HasColumnType("money");
 
             entity.HasOne(e => e.Contract)
+                .WithMany(e => e.Payments)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity<Subscription>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.ToTable("Subscription");
+
+            entity.Property(e => e.AddedDate).IsRequired();
+            entity.Property(e => e.RenewalPeriodInMonths).IsRequired();
+            entity.Property(e => e.BasePriceForRenewalPeriod).IsRequired().HasColumnType("money");
+
+            entity.HasOne(e => e.Client)
+                .WithMany(e => e.Subscriptions)
+                .IsRequired();
+
+            entity.HasOne(e => e.SoftwareProduct)
+                .WithMany(e => e.Subscriptions)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity<SubscriptionPayment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.ToTable("SubscriptionPayment");
+
+            entity.Property(e => e.AmountPaid).IsRequired().HasColumnType("money");
+            entity.Property(e => e.PeriodLastDay).IsRequired();
+
+            entity.HasOne(e => e.Subscription)
                 .WithMany(e => e.Payments)
                 .IsRequired();
         });

@@ -11,4 +11,5 @@ public class SoftwareProduct
 
     public ICollection<Discount> Discounts { get; set; } = new List<Discount>();
     public ICollection<Contract> Contracts { get; set; } = new List<Contract>();
+    public ICollection<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 }
