@@ -7,8 +7,7 @@ public interface IContractsRepository
     public void AddContract(Contract contract);
     public Task<Contract?> GetContractWithPaymentsByIdAsync(Guid id, CancellationToken cancellationToken);
 
-    public Task<List<Contract>> GetContractsAsync(Guid? clientId, Guid? softwareProductId,
-        CancellationToken cancellationToken);
+    public Task<List<Contract>> GetContractsAsync(CancellationToken cancellationToken);
 
     public Task SaveChangesAsync(CancellationToken cancellationToken);
 }

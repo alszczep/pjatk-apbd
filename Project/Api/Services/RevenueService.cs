@@ -1,5 +1,6 @@
 using Api.DTOs;
 using Api.ExternalServices.Interfaces;
+using api.Models;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
 
@@ -18,8 +19,7 @@ public class RevenueService : IRevenueService
 
     public async Task<decimal> GetCurrentRevenueAsync(RevenueDTO dto, CancellationToken cancellationToken)
     {
-        var contracts = await this.contractsRepository.GetContractsAsync(dto.ForClientId, dto.ForSoftwareProductId,
-            cancellationToken);
+        var contracts = await this.GetFilteredContracts(dto.ForClientId, dto.ForSoftwareProductId, cancellationToken);
 
         decimal revenue = contracts.Where(c => c.IsSigned).Sum(c => c.PriceInPlnAfterDiscounts);
 
@@ -28,12 +28,25 @@ public class RevenueService : IRevenueService
 
     public async Task<decimal> GetPredictedRevenueAsync(RevenueDTO dto, CancellationToken cancellationToken)
     {
-        var contracts = await this.contractsRepository.GetContractsAsync(dto.ForClientId, dto.ForSoftwareProductId,
-            cancellationToken);
+        var contracts = await this.GetFilteredContracts(dto.ForClientId, dto.ForSoftwareProductId, cancellationToken);
 
         decimal revenue = contracts.Sum(c => c.PriceInPlnAfterDiscounts);
 
         return await this.GetRevenueInCurrency(revenue, dto.ForCurrency, cancellationToken);
+    }
+
+    private async Task<List<Contract>> GetFilteredContracts(Guid? clientId, Guid? softwareProductId,
+        CancellationToken cancellationToken)
+    {
+        var contracts = await this.contractsRepository.GetContractsAsync(cancellationToken);
+
+        if (clientId != null)
+            contracts = contracts.Where(c => c.Client.Id == clientId).ToList();
+
+        if (softwareProductId != null)
+            contracts = contracts.Where(c => c.SoftwareProduct.Id == softwareProductId).ToList();
+
+        return contracts.ToList();
     }
 
     private async Task<decimal> GetRevenueInCurrency(decimal revenue, string? currencyCode,
@@ -41,7 +54,6 @@ public class RevenueService : IRevenueService
     {
         if (currencyCode == null || currencyCode.Equals("PLN", StringComparison.InvariantCultureIgnoreCase))
             return revenue;
-
 
         decimal? exchangedRevenue =
             await this.nbpService.PriceInPlnToCurrencyAsync(revenue, currencyCode, cancellationToken);
