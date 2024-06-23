@@ -22,14 +22,62 @@ public class FakeContractsRepository : IContractsRepository
         return Task.FromResult<Contract?>(null);
     }
 
-    public Task<List<Contract>> GetContractsAsync(Guid? clientId, Guid? softwareProductId,
-        CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
     public Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
+    }
+
+    public Task<List<Contract>> GetContractsAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult(new List<Contract>
+        {
+            new()
+            {
+                PriceInPlnAfterDiscounts = 2000,
+                SoftwareProduct = FakesConsts.SoftwareProduct1,
+                Client = FakesConsts.ClientCompany1,
+                Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                StartDate = DateTime.Now.Subtract(TimeSpan.FromDays(10)),
+                EndDate = DateTime.Now.Add(TimeSpan.FromDays(10)),
+                IsSigned = true,
+                SignedDate = DateTime.Now.Subtract(TimeSpan.FromDays(5)),
+                YearsOfExtendedSupport = 1
+            },
+            new()
+            {
+                PriceInPlnAfterDiscounts = 3000,
+                SoftwareProduct = FakesConsts.SoftwareProduct1,
+                Client = FakesConsts.ClientIndividual1,
+                Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                StartDate = DateTime.Now.Subtract(TimeSpan.FromDays(10)),
+                EndDate = DateTime.Now.Add(TimeSpan.FromDays(10)),
+                IsSigned = true,
+                SignedDate = DateTime.Now.Subtract(TimeSpan.FromDays(5)),
+                YearsOfExtendedSupport = 1
+            },
+            new()
+            {
+                PriceInPlnAfterDiscounts = 4000,
+                SoftwareProduct = FakesConsts.SoftwareProduct1,
+                Client = FakesConsts.ClientIndividual1,
+                Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                StartDate = DateTime.Now.Subtract(TimeSpan.FromDays(10)),
+                EndDate = DateTime.Now.Add(TimeSpan.FromDays(10)),
+                IsSigned = false,
+                YearsOfExtendedSupport = 1
+            },
+            new()
+            {
+                PriceInPlnAfterDiscounts = 2000,
+                SoftwareProduct = FakesConsts.SoftwareProduct2,
+                Client = FakesConsts.ClientCompany1,
+                Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                StartDate = DateTime.Now.Subtract(TimeSpan.FromDays(10)),
+                EndDate = DateTime.Now.Add(TimeSpan.FromDays(10)),
+                IsSigned = true,
+                SignedDate = DateTime.Now.Subtract(TimeSpan.FromDays(5)),
+                YearsOfExtendedSupport = 1
+            }
+        });
     }
 }
