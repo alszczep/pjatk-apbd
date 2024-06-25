@@ -136,6 +136,42 @@ public static class FakesConsts
         }
     };
 
+    public static readonly Subscription SubscriptionInactiveForSoftwareProduct1 = new()
+    {
+        Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+        SoftwareProduct = SoftwareProduct1,
+        AddedDate = DateOnly.FromDateTime(DateTime.Now.Subtract(TimeSpan.FromDays(1000))),
+        BasePriceForRenewalPeriod = 10000,
+        RenewalPeriodInMonths = 12,
+        Payments = new List<SubscriptionPayment>
+        {
+            new()
+            {
+                Id = Guid.Parse("00000000-0000-0000-0000-000000000002"),
+                PeriodLastDay = DateOnly.FromDateTime(DateTime.Now.AddMonths(12).Subtract(TimeSpan.FromDays(1001))),
+                AmountPaid = 10000
+            }
+        }
+    };
+
+    public static readonly Subscription SubscriptionThatCanBePaidFor = new()
+    {
+        Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+        SoftwareProduct = SoftwareProduct1,
+        AddedDate = DateOnly.FromDateTime(DateTime.Now.Subtract(TimeSpan.FromDays(400))),
+        BasePriceForRenewalPeriod = 10000,
+        RenewalPeriodInMonths = 12,
+        Payments = new List<SubscriptionPayment>
+        {
+            new()
+            {
+                Id = Guid.Parse("00000000-0000-0000-0000-000000000003"),
+                PeriodLastDay = DateOnly.FromDateTime(DateTime.Now.AddMonths(12).Subtract(TimeSpan.FromDays(401))),
+                AmountPaid = 10000
+            }
+        }
+    };
+
     public static readonly ClientCompany ClientCompany1 = new()
     {
         Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),

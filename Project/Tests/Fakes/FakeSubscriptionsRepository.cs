@@ -14,7 +14,13 @@ public class FakeSubscriptionsRepository : ISubscriptionsRepository
 
     public Task<Subscription?> GetSubscriptionWithPaymentsByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        if (id == FakesConsts.SubscriptionActiveForSoftwareProduct1.Id)
+            return Task.FromResult<Subscription?>(FakesConsts.SubscriptionActiveForSoftwareProduct1);
+        if (id == FakesConsts.SubscriptionInactiveForSoftwareProduct1.Id)
+            return Task.FromResult<Subscription?>(FakesConsts.SubscriptionInactiveForSoftwareProduct1);
+        if (id == FakesConsts.SubscriptionThatCanBePaidFor.Id)
+            return Task.FromResult<Subscription?>(FakesConsts.SubscriptionThatCanBePaidFor);
+        return Task.FromResult<Subscription?>(null);
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken)
