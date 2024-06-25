@@ -1,5 +1,4 @@
 using Api.DTOs;
-using Api.Helpers;
 using api.Models;
 using Api.Repositories.Interfaces;
 using Api.Services.Interfaces;
@@ -8,30 +7,38 @@ namespace Api.Services;
 
 public class ContractsService : IContractsService
 {
-    private readonly IClientsRepository clientsRepository;
     private readonly IContractPaymentsRepository contractPaymentsRepository;
+    private readonly IContractsAndSubscriptionsSharedService contractsAndSubscriptionsSharedService;
     private readonly IContractsRepository contractsRepository;
-    private readonly ISoftwareProductsRepository softwareProductsRepository;
 
-    public ContractsService(IClientsRepository clientsRepository,
-        IContractPaymentsRepository contractPaymentsRepository,
-        IContractsRepository contractsRepository,
-        ISoftwareProductsRepository softwareProductsRepository)
+    public ContractsService(IContractPaymentsRepository contractPaymentsRepository,
+        IContractsAndSubscriptionsSharedService contractsAndSubscriptionsSharedService,
+        IContractsRepository contractsRepository)
     {
-        this.clientsRepository = clientsRepository;
         this.contractPaymentsRepository = contractPaymentsRepository;
+        this.contractsAndSubscriptionsSharedService = contractsAndSubscriptionsSharedService;
         this.contractsRepository = contractsRepository;
-        this.softwareProductsRepository = softwareProductsRepository;
     }
 
     public async Task CreateContractAsync(CreateContractDTO dto, CancellationToken cancellationToken)
     {
         EnsureContractDatesAreValid(dto.StartDate, dto.EndDate);
         EnsureYearsOfExtendedSupportAreValid(dto.YearsOfExtendedSupport);
-        SoftwareProduct softwareProduct = await this.GetSoftwareProductWithDiscountsByIdAsync(dto.SoftwareProductId,
-            cancellationToken);
-        Client client = await this.GetClientWithContractsAndSoftwareProductsByIdAsync(dto.ClientId, cancellationToken);
-        EnsureThereIsNoActiveContractWithTheSameSoftwareProductAndClient(client, softwareProduct);
+
+        SoftwareProduct softwareProduct =
+            await this.contractsAndSubscriptionsSharedService.GetSoftwareProductWithDiscountsByIdAsync(
+                dto.SoftwareProductId,
+                cancellationToken);
+        Client client =
+            await this.contractsAndSubscriptionsSharedService
+                .GetClientWithContractsAndSubscriptionsWithPaymentsAndSoftwareProductsByIdAsync(dto.ClientId,
+                    cancellationToken);
+
+        this.contractsAndSubscriptionsSharedService.EnsureThereIsNoActiveContractWithTheSameSoftwareProductAndClient(
+            client, softwareProduct);
+        this.contractsAndSubscriptionsSharedService
+            .EnsureThereIsNoActiveSubscriptionWithTheSameSoftwareProductAndClient(
+                client, softwareProduct);
 
         Contract contract = new()
         {
@@ -40,7 +47,7 @@ public class ContractsService : IContractsService
             Client = client,
             StartDate = dto.StartDate,
             EndDate = dto.EndDate,
-            PriceInPlnAfterDiscounts = CalculateContractPrice(dto.YearsOfExtendedSupport, softwareProduct, client),
+            PriceInPlnAfterDiscounts = this.CalculateContractPrice(dto.YearsOfExtendedSupport, softwareProduct, client),
             YearsOfExtendedSupport = dto.YearsOfExtendedSupport,
             IsSigned = false
         };
@@ -89,64 +96,13 @@ public class ContractsService : IContractsService
             throw new ArgumentException("Years of extended support should be between 0 and 3");
     }
 
-    private async Task<SoftwareProduct> GetSoftwareProductWithDiscountsByIdAsync(Guid softwareProductId,
-        CancellationToken cancellationToken)
-    {
-        SoftwareProduct? softwareProduct =
-            await this.softwareProductsRepository.GetSoftwareProductWithDiscountsByIdAsync(softwareProductId,
-                cancellationToken);
-        if (softwareProduct == null)
-            throw new ArgumentException("Software product not found");
-        return softwareProduct;
-    }
-
-    private async Task<Client> GetClientWithContractsAndSoftwareProductsByIdAsync(Guid clientId,
-        CancellationToken cancellationToken)
-    {
-        Client? client =
-            await this.clientsRepository.GetClientWithContractsAndSoftwareProductsByIdAsync(clientId,
-                cancellationToken);
-        if (client == null)
-            throw new ArgumentException("Client not found");
-        return client;
-    }
-
-    private static bool IsContractNotSignedOrInEffect(Contract contract)
-    {
-        if (!contract.IsSigned) return true;
-
-        if (!contract.SignedDate.HasValue)
-            throw new AggregateException("Contract is signed but has no signed date");
-
-        return contract.SignedDate.Value.AddYears(1 + contract.YearsOfExtendedSupport) > DateTime.Now;
-    }
-
-    private static void EnsureThereIsNoActiveContractWithTheSameSoftwareProductAndClient(Client client,
-        SoftwareProduct softwareProduct)
-    {
-        if (client.Contracts.Any(c => c.SoftwareProduct.Id == softwareProduct.Id && IsContractNotSignedOrInEffect(c)))
-            throw new ArgumentException("Client already has a contract with this software product");
-    }
-
-    private static decimal CalculateDiscountMultiplierForProduct(SoftwareProduct softwareProduct)
-    {
-        var activeDiscounts = softwareProduct.Discounts
-            .Where(d => d.StartDate <= DateTime.Now && d.EndDate >= DateTime.Now).ToList();
-        return MathHelpers.PercentageToMultiplier(activeDiscounts.Count == 0
-            ? 0
-            : activeDiscounts.Max(d => d.DiscountPercentage));
-    }
-
-    private static decimal CalculateDiscountMultiplierForClient(Client client)
-    {
-        return client.Contracts.Any(c => c.IsSigned) ? 0.95m : 1m;
-    }
-
-    private static decimal CalculateContractPrice(int yearsOfExtendedSupport, SoftwareProduct softwareProduct,
+    private decimal CalculateContractPrice(int yearsOfExtendedSupport, SoftwareProduct softwareProduct,
         Client client)
     {
-        decimal productDiscountMultiplier = CalculateDiscountMultiplierForProduct(softwareProduct);
-        decimal clientDiscountMultiplier = CalculateDiscountMultiplierForClient(client);
+        decimal productDiscountMultiplier =
+            this.contractsAndSubscriptionsSharedService.CalculateDiscountMultiplierForProduct(softwareProduct);
+        decimal clientDiscountMultiplier =
+            this.contractsAndSubscriptionsSharedService.CalculateDiscountMultiplierForClient(client);
 
         return (softwareProduct.UpfrontYearlyPriceInPln + Contract.SupportYearPriceInPln * yearsOfExtendedSupport) *
                productDiscountMultiplier *

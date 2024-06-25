@@ -14,8 +14,12 @@ public class CreateContractAsyncTests
     public CreateContractAsyncTests(ITestOutputHelper testOutputHelper)
     {
         this.testOutputHelper = testOutputHelper;
-        this.contractsService = new ContractsService(new FakeClientsRepository(), new FakeContractPaymentsRepository(),
-            new FakeContractsRepository(), new FakeSoftwareProductsRepository());
+        this.contractsService = new ContractsService(
+            new FakeContractPaymentsRepository(),
+            new ContractsAndSubscriptionsSharedService(
+                new FakeClientsRepository(),
+                new FakeSoftwareProductsRepository()),
+            new FakeContractsRepository());
     }
 
     [Fact]

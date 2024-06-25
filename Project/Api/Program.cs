@@ -88,12 +88,16 @@ builder.Services.AddScoped<IClientsRepository, ClientsRepository>();
 builder.Services.AddScoped<IContractPaymentsRepository, ContractPaymentsRepository>();
 builder.Services.AddScoped<IContractsRepository, ContractsRepository>();
 builder.Services.AddScoped<ISoftwareProductsRepository, SoftwareProductsRepository>();
+builder.Services.AddScoped<ISubscriptionPaymentsRepository, SubscriptionPaymentsRepository>();
+builder.Services.AddScoped<ISubscriptionsRepository, SubscriptionsRepository>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IClientsService, ClientsService>();
+builder.Services.AddScoped<IContractsAndSubscriptionsSharedService, ContractsAndSubscriptionsSharedService>();
 builder.Services.AddScoped<IContractsService, ContractsService>();
 builder.Services.AddScoped<IRevenueService, RevenueService>();
+builder.Services.AddScoped<ISubscriptionsService, SubscriptionsService>();
 
 builder.Services.AddScoped<INBPService, NBPService>();
 builder.Services.AddHttpClient<INBPService, NBPService>();

@@ -21,12 +21,16 @@ public class ClientsRepository : IClientsRepository
             cancellationToken);
     }
 
-    public Task<Client?> GetClientWithContractsAndSoftwareProductsByIdAsync(Guid id,
+    public Task<Client?> GetClientWithContractsAndSubscriptionsWithPaymentsAndSoftwareProductsByIdAsync(Guid id,
         CancellationToken cancellationToken)
     {
         return this.projectContext.Clients
             .Include(c => c.Contracts)
             .ThenInclude(c => c.SoftwareProduct)
+            .Include(c => c.Subscriptions)
+            .ThenInclude(s => s.SoftwareProduct)
+            .Include(c => c.Subscriptions)
+            .ThenInclude(s => s.Payments)
             .FirstOrDefaultAsync(
                 c => c.Id == id && (c.Type == ClientType.Company || !((ClientIndividual)c).IsDeleted),
                 cancellationToken);

@@ -12,7 +12,7 @@ public class FakeClientsRepository : IClientsRepository
         return Task.FromResult<Client?>(null);
     }
 
-    public Task<Client?> GetClientWithContractsAndSoftwareProductsByIdAsync(Guid id,
+    public Task<Client?> GetClientWithContractsAndSubscriptionsWithPaymentsAndSoftwareProductsByIdAsync(Guid id,
         CancellationToken cancellationToken)
     {
         if (id == FakesConsts.ClientIndividual1.Id) return Task.FromResult<Client?>(FakesConsts.ClientIndividual1);
