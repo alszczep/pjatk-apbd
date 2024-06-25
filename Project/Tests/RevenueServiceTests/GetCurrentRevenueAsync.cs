@@ -24,7 +24,7 @@ public class GetCurrentRevenueAsync
     }
 
     [Fact]
-    public async void Should_ReturnZero_WhenNoContractsForSoftwareProduct()
+    public async void Should_ReturnZero_WhenNoContractsOrSubscriptionsForSoftwareProduct()
     {
         decimal result = await this.revenueService.GetCurrentRevenueAsync(new RevenueDTO
         {
@@ -37,7 +37,7 @@ public class GetCurrentRevenueAsync
     }
 
     [Fact]
-    public async void Should_ReturnZero_WhenNoContractsForClient()
+    public async void Should_ReturnZero_WhenNoContractsOrSubscriptionsForClient()
     {
         decimal result = await this.revenueService.GetCurrentRevenueAsync(new RevenueDTO
         {
@@ -61,7 +61,7 @@ public class GetCurrentRevenueAsync
     }
 
     [Fact]
-    public async void Should_CorrectRevenue_WhenNoArgumentsArePassed()
+    public async void Should_ReturnCorrectRevenue_WhenNoArgumentsArePassed()
     {
         decimal result = await this.revenueService.GetCurrentRevenueAsync(new RevenueDTO
         {
@@ -70,11 +70,13 @@ public class GetCurrentRevenueAsync
             ForCurrency = null
         }, CancellationToken.None);
 
-        result.ShouldBe(7000);
+        decimal expectedContractsRevenue = 7000;
+        decimal expectedSubscriptionsRevenue = 1050;
+        result.ShouldBe(expectedContractsRevenue + expectedSubscriptionsRevenue);
     }
 
     [Fact]
-    public async void Should_CorrectRevenue_WhenExistingSoftwareProductIdIsPassed()
+    public async void Should_ReturnCorrectRevenue_WhenExistingSoftwareProductIdIsPassed()
     {
         decimal result = await this.revenueService.GetCurrentRevenueAsync(new RevenueDTO
         {
@@ -83,11 +85,13 @@ public class GetCurrentRevenueAsync
             ForCurrency = null
         }, CancellationToken.None);
 
-        result.ShouldBe(5000);
+        decimal expectedContractsRevenue = 5000;
+        decimal expectedSubscriptionsRevenue = 650;
+        result.ShouldBe(expectedContractsRevenue + expectedSubscriptionsRevenue);
     }
 
     [Fact]
-    public async void Should_CorrectRevenue_WhenExistingClientIdIsPassed()
+    public async void Should_ReturnCorrectRevenue_WhenExistingClientIdIsPassed()
     {
         decimal result = await this.revenueService.GetCurrentRevenueAsync(new RevenueDTO
         {
@@ -96,11 +100,13 @@ public class GetCurrentRevenueAsync
             ForCurrency = null
         }, CancellationToken.None);
 
-        result.ShouldBe(4000);
+        decimal expectedContractsRevenue = 4000;
+        decimal expectedSubscriptionsRevenue = 750;
+        result.ShouldBe(expectedContractsRevenue + expectedSubscriptionsRevenue);
     }
 
     [Fact]
-    public async void Should_CorrectRevenue_WhenExistingCurrencyIsPassed()
+    public async void Should_ReturnCorrectRevenue_WhenExistingCurrencyIsPassed()
     {
         decimal result = await this.revenueService.GetCurrentRevenueAsync(new RevenueDTO
         {
@@ -109,11 +115,14 @@ public class GetCurrentRevenueAsync
             ForCurrency = FakesConsts.ExistingCurrency
         }, CancellationToken.None);
 
-        result.ShouldBe(7000 * FakesConsts.ExistingCurrencyMultiplier);
+        decimal expectedContractsRevenue = 7000;
+        decimal expectedSubscriptionsRevenue = 1050;
+        result.ShouldBe((expectedContractsRevenue + expectedSubscriptionsRevenue) *
+                        FakesConsts.ExistingCurrencyMultiplier);
     }
 
     [Fact]
-    public async void Should_CorrectRevenue_WhenExistingClientIdAndSoftwareProductIdArePassed()
+    public async void Should_ReturnCorrectRevenue_WhenExistingClientIdAndSoftwareProductIdArePassed()
     {
         decimal result = await this.revenueService.GetCurrentRevenueAsync(new RevenueDTO
         {
@@ -122,6 +131,8 @@ public class GetCurrentRevenueAsync
             ForCurrency = null
         }, CancellationToken.None);
 
-        result.ShouldBe(2000);
+        decimal expectedContractsRevenue = 2000;
+        decimal expectedSubscriptionsRevenue = 350;
+        result.ShouldBe(expectedContractsRevenue + expectedSubscriptionsRevenue);
     }
 }

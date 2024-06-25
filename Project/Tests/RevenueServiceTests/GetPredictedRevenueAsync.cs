@@ -70,7 +70,9 @@ public class GetPredictedRevenueAsync
             ForCurrency = null
         }, CancellationToken.None);
 
-        result.ShouldBe(11000);
+        decimal expectedContractsRevenue = 11000;
+        decimal expectedSubscriptionsRevenue = 1900;
+        result.ShouldBe(expectedContractsRevenue + expectedSubscriptionsRevenue);
     }
 
     [Fact]
@@ -83,7 +85,9 @@ public class GetPredictedRevenueAsync
             ForCurrency = null
         }, CancellationToken.None);
 
-        result.ShouldBe(9000);
+        decimal expectedContractsRevenue = 9000;
+        decimal expectedSubscriptionsRevenue = 1000;
+        result.ShouldBe(expectedContractsRevenue + expectedSubscriptionsRevenue);
     }
 
     [Fact]
@@ -96,7 +100,9 @@ public class GetPredictedRevenueAsync
             ForCurrency = null
         }, CancellationToken.None);
 
-        result.ShouldBe(7000);
+        decimal expectedContractsRevenue = 7000;
+        decimal expectedSubscriptionsRevenue = 650;
+        result.ShouldBe(expectedContractsRevenue + expectedSubscriptionsRevenue);
     }
 
     [Fact]
@@ -109,7 +115,10 @@ public class GetPredictedRevenueAsync
             ForCurrency = FakesConsts.ExistingCurrency
         }, CancellationToken.None);
 
-        result.ShouldBe(11000 * FakesConsts.ExistingCurrencyMultiplier);
+        decimal expectedContractsRevenue = 11000;
+        decimal expectedSubscriptionsRevenue = 1900;
+        result.ShouldBe((expectedContractsRevenue + expectedSubscriptionsRevenue) *
+                        FakesConsts.ExistingCurrencyMultiplier);
     }
 
     [Fact]
@@ -122,6 +131,8 @@ public class GetPredictedRevenueAsync
             ForCurrency = null
         }, CancellationToken.None);
 
-        result.ShouldBe(7000);
+        decimal expectedContractsRevenue = 7000;
+        decimal expectedSubscriptionsRevenue = 650;
+        result.ShouldBe(expectedContractsRevenue + expectedSubscriptionsRevenue);
     }
 }

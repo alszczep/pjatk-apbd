@@ -48,7 +48,7 @@ public class RevenueService : IRevenueService
         decimal subscriptionsPredictedRevenue = subscriptions
             .Where(s => this.contractsAndSubscriptionsSharedService.IsSubscriptionActive(s)
                         && !this.contractsAndSubscriptionsSharedService.WasSubscriptionCurrentRenewalPeriodPaidFor(s))
-            // assumes that client will pay for the next renewal period, bcs ofc we cannot count it infinitely
+            // assumes that client will pay for the current renewal period if he didn't pay already, bcs ofc we cannot count it infinitely
             .Sum(s => s.BasePriceForRenewalPeriod);
 
 
