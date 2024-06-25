@@ -5,8 +5,11 @@ namespace Tests.Fakes;
 
 public class FakeContractsRepository : IContractsRepository
 {
+    public List<Contract> addedThroughTests = new();
+
     public void AddContract(Contract contract)
     {
+        this.addedThroughTests.Add(contract);
     }
 
     public Task<Contract?> GetContractWithPaymentsByIdAsync(Guid id, CancellationToken cancellationToken)

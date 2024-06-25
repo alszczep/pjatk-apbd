@@ -86,7 +86,7 @@ public class ContractsAndSubscriptionsSharedService : IContractsAndSubscriptions
         if (!contract.IsSigned) return true;
 
         if (!contract.SignedDate.HasValue)
-            throw new AggregateException("Contract is signed but has no signed date");
+            throw new ArgumentException("Contract is signed but has no signed date");
 
         return contract.SignedDate.Value.AddYears(1 + contract.YearsOfExtendedSupport) > DateTime.Now;
     }

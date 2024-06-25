@@ -42,7 +42,8 @@ public static class FakesConsts
         Name = "Name1",
         Version = "Version1",
         Category = "Category1",
-        Description = "Description1"
+        Description = "Description1",
+        UpfrontYearlyPriceInPln = 12000
     };
 
     public static readonly SoftwareProduct SoftwareProduct2 = new()
@@ -52,6 +53,7 @@ public static class FakesConsts
         Version = "Version2",
         Category = "Category2",
         Description = "Description2",
+        UpfrontYearlyPriceInPln = 24000,
         Discounts = new List<Discount>
         {
             Discount1,
@@ -116,6 +118,24 @@ public static class FakesConsts
         YearsOfExtendedSupport = 1
     };
 
+    public static readonly Subscription SubscriptionActiveForSoftwareProduct1 = new()
+    {
+        Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+        SoftwareProduct = SoftwareProduct1,
+        AddedDate = DateOnly.FromDateTime(DateTime.Now.Subtract(TimeSpan.FromDays(10))),
+        BasePriceForRenewalPeriod = 10000,
+        RenewalPeriodInMonths = 12,
+        Payments = new List<SubscriptionPayment>
+        {
+            new()
+            {
+                Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
+                PeriodLastDay = DateOnly.FromDateTime(DateTime.Now.AddMonths(12).Subtract(TimeSpan.FromDays(11))),
+                AmountPaid = 10000
+            }
+        }
+    };
+
     public static readonly ClientCompany ClientCompany1 = new()
     {
         Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
@@ -161,5 +181,33 @@ public static class FakesConsts
         {
             ContractSignedAndActiveForSoftwareProduct1
         }
+    };
+
+    public static readonly ClientIndividual ClientIndividual3 = new()
+    {
+        Id = Guid.Parse("00000000-0000-0000-0000-000000000004"),
+        Pesel = "Pesel3",
+        FirstName = "FirstName3",
+        LastName = "LastName3",
+        Address = "IndividualAddress3",
+        PhoneNumber = "IndividualPhoneNumber3",
+        Email = "IndividualEmail3",
+        Type = ClientType.Individual,
+        Subscriptions = new List<Subscription>
+        {
+            SubscriptionActiveForSoftwareProduct1
+        }
+    };
+
+    public static readonly ClientIndividual ClientIndividual4 = new()
+    {
+        Id = Guid.Parse("00000000-0000-0000-0000-000000000005"),
+        Pesel = "Pesel4",
+        FirstName = "FirstName4",
+        LastName = "LastName4",
+        Address = "IndividualAddress4",
+        PhoneNumber = "IndividualPhoneNumber4",
+        Email = "IndividualEmail4",
+        Type = ClientType.Individual
     };
 }
