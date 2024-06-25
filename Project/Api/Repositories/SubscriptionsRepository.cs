@@ -26,6 +26,15 @@ public class SubscriptionsRepository : ISubscriptionsRepository
             .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
     }
 
+    public Task<List<Subscription>> GetSubscriptionsWithPaymentsAsync(CancellationToken cancellationToken)
+    {
+        return this.projectContext.Subscriptions
+            .Include(c => c.Client)
+            .Include(c => c.SoftwareProduct)
+            .Include(s => s.Payments)
+            .ToListAsync(cancellationToken);
+    }
+
     public Task SaveChangesAsync(CancellationToken cancellationToken)
     {
         return this.projectContext.SaveChangesAsync(cancellationToken);

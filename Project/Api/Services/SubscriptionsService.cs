@@ -77,7 +77,7 @@ public class SubscriptionsService : ISubscriptionsService
             await this.GetSubscriptionWithPaymentsByIdAsync(dto.SubscriptionId, cancellationToken);
 
         this.EnsureSubscriptionIsActive(subscription);
-        EnsureCurrentRenewalPeriodWasNotPaidFor(subscription);
+        this.EnsureCurrentRenewalPeriodWasNotPaidFor(subscription);
         EnsurePaymentIsEqualToRenewalPeriodPrice(dto.PaymentAmountInPln, subscription);
 
         SubscriptionPayment payment = new()
@@ -122,9 +122,9 @@ public class SubscriptionsService : ISubscriptionsService
             throw new ArgumentException("Subscription is not active");
     }
 
-    private static void EnsureCurrentRenewalPeriodWasNotPaidFor(Subscription subscription)
+    private void EnsureCurrentRenewalPeriodWasNotPaidFor(Subscription subscription)
     {
-        if (subscription.Payments.Any(p => p.PeriodLastDay >= DateOnly.FromDateTime(DateTime.Now)))
+        if (this.contractsAndSubscriptionsSharedService.WasSubscriptionCurrentRenewalPeriodPaidFor(subscription))
             throw new ArgumentException("Current renewal period was already paid for");
     }
 

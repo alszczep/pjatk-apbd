@@ -14,7 +14,13 @@ public class GetPredictedRevenueAsync
     public GetPredictedRevenueAsync(ITestOutputHelper testOutputHelper)
     {
         this.testOutputHelper = testOutputHelper;
-        this.revenueService = new RevenueService(new FakeContractsRepository(), new FakeNBPService());
+        this.revenueService = new RevenueService(
+            new ContractsAndSubscriptionsSharedService(
+                new FakeClientsRepository(),
+                new FakeSoftwareProductsRepository()),
+            new FakeContractsRepository(),
+            new FakeNBPService(),
+            new FakeSubscriptionsRepository());
     }
 
     [Fact]

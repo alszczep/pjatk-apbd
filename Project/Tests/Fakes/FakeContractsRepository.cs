@@ -5,7 +5,7 @@ namespace Tests.Fakes;
 
 public class FakeContractsRepository : IContractsRepository
 {
-    public List<Contract> addedThroughTests = new();
+    public List<Contract> addedThroughTests { get; } = new();
 
     public void AddContract(Contract contract)
     {

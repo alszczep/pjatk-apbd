@@ -5,7 +5,7 @@ namespace Tests.Fakes;
 
 public class FakeSubscriptionsRepository : ISubscriptionsRepository
 {
-    public List<Subscription> addedThroughTests = new();
+    public List<Subscription> addedThroughTests { get; } = new();
 
     public void AddSubscription(Subscription subscription)
     {
@@ -21,6 +21,11 @@ public class FakeSubscriptionsRepository : ISubscriptionsRepository
         if (id == FakesConsts.SubscriptionThatCanBePaidFor.Id)
             return Task.FromResult<Subscription?>(FakesConsts.SubscriptionThatCanBePaidFor);
         return Task.FromResult<Subscription?>(null);
+    }
+
+    public Task<List<Subscription>> GetSubscriptionsWithPaymentsAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult(new List<Subscription>());
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken)

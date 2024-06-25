@@ -78,7 +78,7 @@ public class AuthHelpers
 
         JwtSecurityToken jwtToken = new(
             claims: claims,
-            expires: DateTime.Now.AddMinutes(50000),
+            expires: DateTime.Now.AddMinutes(50000), // set for easier testing
             signingCredentials: credentials
         );
 

@@ -21,4 +21,5 @@ public interface IContractsAndSubscriptionsSharedService
 
     decimal CalculateDiscountMultiplierForClient(Client client);
     bool IsSubscriptionActive(Subscription subscription);
+    bool WasSubscriptionCurrentRenewalPeriodPaidFor(Subscription subscription);
 }

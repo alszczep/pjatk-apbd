@@ -81,6 +81,11 @@ public class ContractsAndSubscriptionsSharedService : IContractsAndSubscriptions
                DateOnly.FromDateTime(DateTime.Now);
     }
 
+    public bool WasSubscriptionCurrentRenewalPeriodPaidFor(Subscription subscription)
+    {
+        return subscription.Payments.Max(p => p.PeriodLastDay) >= DateOnly.FromDateTime(DateTime.Now);
+    }
+
     private static bool IsContractNotSignedOrInEffect(Contract contract)
     {
         if (!contract.IsSigned) return true;
